@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<script type="text/javascript" th:src="@{/static/js/jquery-3.1.0.js}"></script>
+<script>
+    $(function () {
+        $("tr:gt(0):odd").css("backgroundColor","red")
+    })
+</script>
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<table border="1px solid red">
+    <tr>
+        <th>areaId</th>
+        <th>areaName</th>
+        <th>areaDesc</th>
+        <th>priority</th>
+    </tr>
+    <tr th:each="area : ${rows}">
+        <td th:text="${area.areaId}"></td>
+        <td th:text="${area.areaName}"></td>
+        <td th:text="${area.areaDesc}"></td>
+        <td th:text="${area.priority}"></td>
+    </tr>
+    <tr>
+        <td colspan="4" th:text="${total}"></td>
+    </tr>
+</table>
+</body>
+</html>
+
+
+

@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>商品列表</title>
+    <link rel="stylesheet" th:href="@{/static/layui/css/layui.css}">
+</head>
+<body>
+<!-- 搜索条件开始 -->
+<fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
+    <legend>查询条件</legend>
+</fieldset>
+<form action="" class="layui-form" method="get" id="queryForm">
+    <div class="layui-form-item">
+        <div class="layui-inline">
+            <label class="layui-form-label">商品名称:</label>
+            <div class="layui-input-inline">
+                <input name="productName" type="text" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-inline">
+            <label class="layui-form-label">价格:</label>
+            <div class="layui-input-inline" style="width: 100px;">
+                <input type="text" name="startPrice" placeholder="￥" autocomplete="off" class="layui-input">
+            </div>
+            <div class="layui-form-mid">-</div>
+            <div class="layui-input-inline" style="width: 100px;">
+                <input type="text" name="endPrice" placeholder="￥" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <div class="layui-inline">
+            <label class="layui-form-label">开始时间:</label>
+            <div class="layui-input-inline">
+                <input type="text" name="startTime" id="startTime"  readonly="readonly" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-inline">
+            <label class="layui-form-label">结束时间:</label>
+            <div class="layui-input-inline">
+                <input type="text" name="endTime" id="endTime" readonly="readonly"  autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-inline">
+            <label class="layui-form-label">商品状态:</label>
+            <div class="layui-inline">
+                <select name="enableStatus" lay-filter="enableStatus">
+                    <option value="3">请选择</option>
+                    <option value="0">下架</option>
+                    <option value="1">在架</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="layui-inline" style="text-align: center;">
+            <div class="layui-input-inline">
+                <button type="button" class="layui-btn layui-btn-normal layui-btn-sm layui-icon layui-icon-search" id="doSearch">查询</button>
+                <button type="reset" class="layui-btn layui-btn-warm layui-btn-sm layui-icon layui-icon-refresh">重置</button>
+            </div>
+        </div>
+    </div>
+
+</form>
+
+<!-- 搜索条件结束 -->
+
+
+<!-- 数据表格开始 -->
+<table class="layui-hide" id="productTable" lay-filter="productTable"></table>
+<div style="display: none;" id="userToolBar">
+    <button type="button" class="layui-btn layui-btn-sm" lay-event="add">增加</button>
+    <button type="button" class="layui-btn layui-btn-sm" lay-event="batchDelete">批量删除</button>
+</div>
+<div  id="userBar" style="display: none;">
+    <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+    <a class="layui-btn layui-btn-green layui-btn-xs" lay-event="up">上架</a>
+    <a class="layui-btn layui-btn-warm layui-btn-xs" lay-event="down">下架</a>
+    <a class="layui-btn layui-btn-warm layui-btn-xs" lay-event="viewImage">查看大图</a>
+</div>
+<!-- 数据表格结束 -->
+
+<!-- 添加和修改的弹出层开始 -->
+<div style="display: none;padding: 20px" id="saveOrUpdateDiv" >
+    <form class="layui-form " action="" lay-filter="dataFrm" id="dataFrm">
+        <input type="hidden" name="productId">
+        <div class="layui-form-item">
+            <div class="layui-inline">
+                <label class="layui-form-label">商品名称:</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="productName"  lay-verify="required" autocomplete="off"
+                           class="layui-input">
+                </div>
+            </div>
+            <div class="layui-inline">
+                <label class="layui-form-label">类别:</label>
+                <div class="layui-input-inline">
+                    <select name="productCategoryId" lay-filter="productCategoryId" id="productCategoryId">
+
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-inline">
+                <label class="layui-form-label">优先级:</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="priority"  autocomplete="off"
+                           class="layui-input">
+                </div>
+            </div>
+            <div class="layui-inline">
+                <label class="layui-form-label">积分:</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="point" lay-verify="required" autocomplete="off"
+                           class="layui-input">
+                </div>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-inline">
+                <label class="layui-form-label">原价:</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="normalPrice" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-inline">
+                <label class="layui-form-label">现价:</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="promotionPrice" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <div class="layui-upload">
+                <div class="layui-upload-list" id="imgAddrDiv">
+                    <button type="button" class="layui-btn" >上传缩略图</button>
+                    <img class="layui-upload-img thumbImg" id="showProductImg"  style="width: 100px">
+                    <!-- 保存当前显示图片的地址 -->
+                    <input type="hidden" name="imgAddr" id="imgAddr">
+                </div>
+            </div>
+        </div>
+
+        <div class="layui-form-item layui-form-text">
+            <label class="layui-form-label">商品描述:</label>
+            <div class="layui-input-block">
+                <textarea name="productDesc" placeholder="请输入内容" class="layui-textarea"></textarea>
+            </div>
+        </div>
+
+        <input name="shopId" type="hidden">
+    </form>
+
+</div>
+<!-- 添加和修改的弹出层结束 -->
+
+<!-- 查看大图弹出的层 开始 -->
+<div id="viewProductImageDiv" style="display: none;text-align: center;">
+    <img alt="商品图片" width="550" height="350" id="view_productimg">
+</div>
+<!-- 查看大图弹出的层 结束 -->
+
+<script th:src="@{/static/layui/layui.js}"></script>
+<script type="text/javascript">
+    var tableIns;
+    var context = [[@{/}]];	//获取项目名称
+    layui.use([ 'jquery', 'layer', 'form', 'table','laydate','upload' ], function() {
+        var $ = layui.jquery;
+        var layer = layui.layer;
+        var form = layui.form;
+        var table = layui.table;
+        var laydate=layui.laydate;
+        var upload = layui.upload;
+
+        //绑定时间选择器
+        laydate.render({
+            elem:'#startTime'
+        });
+        laydate.render({
+            elem:'#endTime'
+        })
+
+        //渲染数据表格
+        tableIns=table.render({
+            elem: '#productTable'   //渲染的目标对象
+            ,url:context +'shop/product/list' //数据接口
+            ,title: '商品信息表'//数据导出来的标题
+            ,toolbar:"#userToolBar"   //表格的工具条
+            ,height:'full-200'
+            ,cellMinWidth:100 //设置列的最小默认宽度
+            ,done:function(data, curr, count){
+                //不是第一页时如果当前返回的数据为0那么就返回上一页
+                if(data.data.length==0 && curr!=1) {
+                    tableIns.reload({
+                        page:{
+                            curr:curr-1
+                        }
+                    });
+                }
+            }
+            ,page: { //支持传入 laypage 组件的所有参数（某些参数除外，如：jump/elem） - 详见文档
+                layout: ['count', 'prev', 'page', 'next', 'limit', 'refresh', 'skip']//自定义分页布局
+                ,limits:[5,10,15]
+                ,first: false //不显示首页
+                ,last: false //不显示尾页
+            }  //是否启用分页
+            ,cols: [[   //列表数据
+                {type: 'checkbox', fixed: 'left'}
+                ,{field:'productId', title:'商品ID', sort:true}
+                ,{field:'productName', title:'商品名称',align:'center'}
+                ,{field:'productDesc', title:'商品描述',align:'center'}
+                ,{field:'imgAddr', title:'简略图',templet: function (d) {
+                        return "<img width=40 height=30 src="+context+"shop/file/downloadShowFile?path="+d.imgAddr+" />"
+                    }}
+                ,{field:'normalPrice', title:'原价',align:'center'}
+                ,{field:'promotionPrice', title:'现价',align:'center'}
+                ,{field:'createTime', title:'创建时间',align:'center',sort:true}
+                ,{field:'enableStatus', title:'状态',align:'center',templet:function(d){
+                        return d.enableStatus=='1'?'下架':'上架';
+                    }}
+                ,{field:'point', title:'积分',align:'center'}
+                ,{fixed:'right', title:'操作', toolbar: '#userBar', width:260,align:'center'}
+            ]
+            ]
+        })
+
+        //查询商品
+        $("#doSearch").click(function () {
+            var params = $("#queryForm").serialize();
+            tableIns.reload({
+                url:context+"shop/product/list?"+params
+            })
+        });
+
+        //监听头部工具栏事件
+        table.on("toolbar(productTable)",function(obj){
+            switch(obj.event){
+                case 'add':
+                    openAddProduct();
+                    break;
+                case 'batchDelete':
+                    layer.msg('批量删除');
+                    deleteBatch();
+                    break;
+            };
+        })
+
+        //批量删除
+        function deleteBatch() {
+            //得到选中的数据行
+            var checkStatus = table.checkStatus('productTable');
+            var data = checkStatus.data;
+            var params="";
+            $.each(data,function(i,item){
+                if(i==0){
+                    params+="ids="+item.productId;
+                }else{
+                    params+="&ids="+item.productId;
+                }
+            });
+            layer.confirm('真的删除选中的这些商品吗', function(index){
+                //向服务端发送删除指令
+                $.post(context+"shop/product/deleteBatchProduct",params,function(res){
+                    layer.msg(res.msg);
+                    layer.close(index)
+                    //刷新数据 表格
+                    tableIns.reload();
+                })
+            });
+        }
+
+        //监听行工具事件
+        table.on('tool(productTable)', function(obj){
+            var data = obj.data; //获得当前行数据
+            var layEvent = obj.event; //获得 lay-event 对应的值（也可以是表头的 event 参数对应的值）
+            if(layEvent === 'del'){ //删除
+                //layer.msg("删除");
+                layer.confirm('真的删除【'+data.productName+'】么', function(index){
+                    //layer.close(index);
+                    //向服务端发送删除指令
+                    $.get(context+"shop/product/deleteProduct",{"productId":data.productId},function(res){
+                        layer.msg(res.msg);
+                        //刷新数据 表格
+                        tableIns.reload();
+                        layer.close(index);
+                    })
+                });
+            } else if(layEvent === 'edit'){ //编辑
+                openUpdateProduct(data)
+                layer.msg("修改")
+            } else if(layEvent == 'up') {
+               up(data);
+                //layer.msg('上架')
+            } else if(layEvent == 'down') {
+               // layer.msg('下架')
+                down(data);
+            } else if(layEvent == 'viewImage'){
+                showProductImage(data);
+            }
+        });
+
+
+        var url;
+        var mainIndex;
+        //打开添加页面
+        function openAddProduct(){
+            mainIndex = layer.open({
+                type:1,
+                title:'添加商品',
+                content:$("#saveOrUpdateDiv"),
+                area:['1000px','450px'],
+                btnAlign:'c',
+                btn:['<div class="layui-icon layui-icon-release">保存</div>','<div class="layui-icon layui-icon-close">关闭</div>'],
+                yes:function(index, layero){
+                    saveProduct();
+                    layer.msg("保存成功");
+                },
+                btn2:function(index, layero){
+                    layer.msg("关闭");
+                    return true;
+                },
+                success: function(index){
+                    var $productCategoryId = $("#productCategoryId");
+                    //清空表单数据
+                    $("#dataFrm")[0].reset();
+                    //清空下拉框数据
+                    $productCategoryId.empty();
+                    //发送请求，加载当前店铺下的商品类别
+                    $.getJSON(context+"shop/category/list",function (data) {
+                        //填充新增页面的下拉框
+                        $(data.data).each(function () {
+                            $productCategoryId.append("<option value='"+this.productCategoryId+"'>"+this.productCategoryName+"</option>");
+                            $productCategoryId.append("<input value='"+this.shopId+"' name='shopId' />");
+                        })
+                    })
+                    //设置默认图片
+                    $("#showProductImg").attr("src",context+"shop/file/downloadShowFile?path="+context+"static/images/defaultproductimage.jpg")
+                    $("#imgAddr").val(context+"static/images/defaultproductimage.jpg")
+                    url=context+"shop/product/addProduct";
+                }
+            });
+        }
+
+        //打开修改页面
+        function openUpdateProduct(data){
+            mainIndex=layer.open({
+                type:1,
+                title:'修改商品',
+                content:$("#saveOrUpdateDiv"),
+                area:['1000px','450px'],
+                btn:['<div class="layui-icon layui-icon-release">修改</div>','<div class="layui-icon layui-icon-close">关闭</div>'],
+                yes:function(index, layero){
+                    saveProduct();
+                    layer.msg("修改成功");
+                },
+                btn2:function(index, layero){
+                    layer.msg("关闭");
+                    return true;
+                },
+                success:function(index){
+                    var $productCategoryId = $("#productCategoryId");
+                    form.val("dataFrm",data);
+                    //清空下拉菜单
+                    $productCategoryId.empty();
+                    //发送请求，加载当前店铺下的商品类别
+                    $.getJSON(context+"shop/category/list",function (datax) {
+                        //填充新增页面的下拉框
+                        $(datax.data).each(function () {
+                            // selected='"+this.productCategoryId==data.productCategoryId?selected:" "+"'
+                            $productCategoryId.append("<option value='"+this.productCategoryId+"'>"+this.productCategoryName+"</option>");
+                        })
+                    })
+                    $("#showProductImg").attr("src",context+"shop/file/downloadShowFile?path="+data.imgAddr);
+                    url=context+"shop/product/updateProduct";
+                    $("#productId").attr("readonly","readonly");
+                }
+            });
+        }
+
+        //保存商品
+        function saveProduct() {
+            var params = $("#dataFrm").serialize();
+            $.post(url,params,function(obj){
+                layer.msg(obj.msg);
+                //关闭弹出层
+                layer.close(mainIndex);
+                //刷新数据 表格
+                tableIns.reload();
+            })
+        }
+
+        //下架商品
+        function down(data) {
+            layer.confirm('真的要下架【'+data.productName+'】么', function(index){
+                //向服务端发送删除指令
+                $.get(context+"shop/product/down",{"productId":data.productId},function(res){
+                    layer.msg(res.msg);
+                    //刷新数据 表格
+                    tableIns.reload();
+                    layer.close(index);
+                })
+            });
+        }
+
+        //上架商品
+        function up(data) {
+            layer.confirm('真的要上架【'+data.productName+'】么', function(index){
+                //向服务端发送删除指令
+                $.get(context+"shop/product/up",{"productId":data.productId},function(res){
+                    layer.msg(res.msg);
+                    //刷新数据 表格
+                    tableIns.reload();
+                    layer.close(index);
+                })
+            });
+        }
+
+        //查看大图
+        function showProductImage(data) {
+            mainIndex=layer.open({
+                type:1,
+                title:"【"+data.productName+'】的商品图片',
+                content:$("#viewProductImageDiv"),
+                area:['600px','400px'],
+                success:function(index){
+                    //$("#view_productimg").attr("src",data.imgAddr);
+                    $("#view_productimg").attr("src",context+"shop/file/downloadShowFile?path="+data.imgAddr);
+                }
+            });
+        }
+
+        //普通图片上传
+        var uploadInst = upload.render({
+            elem: '#imgAddrDiv',
+            url: context+'shop/file/uploadFile',
+            acceptMime:'images/*',
+            field:"mf",
+            done: function(res){
+                //如果上传失败
+                if(res.code > 0){
+                    return layer.msg('上传失败');
+                }
+                //上传成功
+                $('#showProductImg').attr('src',context+'shop/file/downloadShowFile?path='+res.data[0].src);
+                $('#imgAddr').val(res.data[0].src);
+                $('#imgAddrDiv').css("background","#fff");
+            }
+        });
+    });
+</script>
+</body>

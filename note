@@ -1,0 +1,9 @@
+2020-03-17
+1.完成SpringBoot的课上代码
+2.完成项目的环境搭建
+3.完成用户管理模块：注册、登录、退出
+
+整合七牛云存储
+https://developer.qiniu.com/kodo/sdk/1239/java
+参考：https://blog.csdn.net/weixin_37264997/article/details/82285343
+整合客户端上传

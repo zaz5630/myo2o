@@ -1,0 +1,118 @@
+[
+	{
+		"title": "店铺信息管理",
+		"icon": "&#xe655;",
+		"href": "op/register.html",
+		"spread": true,
+		"children": [
+			{
+				"title": "注册店铺",
+				"icon": "&#xe66f;",
+				"href": "op/register.html",
+				"spread": false
+			},
+			{
+				"title": "门店列表",
+				"icon": "&#xe665;",
+				"href": "op/storeList.html",
+				"spread": false
+			}
+		]
+	},
+	{
+		"title": "业务管理",
+		"icon": "&#xe634;",
+		"href": "page/img/images.html",
+		"spread": false,
+		"children": [
+			{
+				"title": "商品类别管理",
+				"icon": "&#xe61c;",
+				"href": "category/list.html",
+				"spread": false
+			},
+			{
+				"title": "商品管理",
+				"icon": "&#xe609;",
+				"href": "product/list.html",
+				"spread": false
+			},
+			{
+				"title": "订单列表",
+				"icon": "&#xe61c;",
+				"href": "order/list.html",
+				"spread": false
+			}
+		]
+	},
+	{
+		"title": "统计分析",
+		"icon": "&#xe634;",
+		"href": "chart/top5.html",
+		"spread": false,
+		"children": [
+			{
+				"title": "购买力Top5",
+				"icon": "&#xe61c;",
+				"href": "chart/buyerTop5.html",
+				"spread": false
+			},
+			{
+				"title": "热销商品",
+				"icon": "&#xe61c;",
+				"href": "chart/top5.html",
+				"spread": false
+			},
+			{
+				"title": "订单分布",
+				"icon": "&#xe609;",
+				"href": "chart/order.html",
+				"spread": false
+			},
+			{
+				"title": "交易额统计",
+				"icon": "&#xe61c;",
+				"href": "chart/money.html",
+				"spread": false
+			}
+		]
+	},
+	{
+		"title": "系统管理",
+		"icon": "&#xe716;",
+		"href": "",
+		"spread": false,
+		"children": [
+			{
+				"title": "菜单管理",
+				"icon": "&#xe61c;",
+				"href": "page/404.html",
+				"spread": false
+			},
+			{
+				"title": "角色管理",
+				"icon": "&#xe609;",
+				"href": "page/login/login.html",
+				"spread": false
+			},
+			{
+				"title": "用户管理",
+				"icon": "&#xe609;",
+				"href": "page/login/login.html",
+				"spread": false
+			},
+			{
+				"title": "日志管理",
+				"icon": "&#xe609;",
+				"href": "page/login/login.html",
+				"spread": false
+			},
+			{
+				"title": "系统公告",
+				"icon": "&#xe609;",
+				"href": "page/login/login.html",
+				"spread": false
+			}
+		]
+	}
+]

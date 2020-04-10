@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.azzhu.myo2o.mapper.shop.ChartMapper">
+    <select id="getTop5Product" parameterType="map" resultType="map">
+       SELECT product_name,SUM(product_quantity) total_count
+       FROM tb_order_detail
+      <where>
+          <choose>
+              <when test="startTime != null and startTime != '' and endTime != null and endTime != '' ">
+                  create_time between #{startTime} and #{endTime}
+              </when>
+              <when test="month != null and month != '' ">
+                  date_format(create_time,'%Y-%m')= #{month}
+              </when>
+          </choose>
+      </where>
+       GROUP BY product_name
+       ORDER BY SUM(product_quantity) DESC LIMIT 5;
+    </select>
+
+    <!--获取订单金额-->
+    <select id="getMoney" parameterType="map" resultType="map">
+        SELECT DATE_FORMAT(create_time,'%Y-%m-%d') order_time, SUM(`order_amount`) total_amount
+        FROM tb_order
+        WHERE `pay_status` = 0
+        <choose>
+            <when test="startTime != null and startTime != '' and endTime != null and endTime != '' ">
+                AND `create_time` BETWEEN #{startTime} and #{endTime}
+                GROUP BY DATE_FORMAT(create_time,'%Y-%m-%d')
+            </when>
+            <when test="month != null and month != '' ">
+                and DATE_FORMAT(`create_time`,'%Y-%m') = #{month}
+                GROUP BY DATE_FORMAT(`create_time`,'%Y-%m')
+            </when>
+            <otherwise>
+                GROUP BY DATE_FORMAT(create_time,'%Y-%m-%d')
+            </otherwise>
+        </choose>
+    </select>
+
+    <!--订单状态分析-->
+    <select id="getOrderStatus" parameterType="map" resultType="map">
+      SELECT
+        SUM(IF(order_status = 0,1,0)) 'finish',
+        SUM(IF(order_status = 1,1,0)) 'cancel',
+        SUM(IF(pay_status = 0,1,0)) 'finish_pay',
+        SUM(IF(pay_status = 1,1,0)) 'wait_pay'
+      FROM tb_order
+      <where>
+          <choose>
+              <when test="startTime != null and startTime != '' and endTime != null and endTime != '' ">
+                  create_time between #{startTime} and #{endTime}
+              </when>
+              <when test="month != null and month != '' ">
+                  date_format(create_time,'%Y-%m')= #{month}
+              </when>
+          </choose>
+      </where>
+    </select>
+</mapper>
